@@ -1,20 +1,14 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+
 import java.util.Map;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class EmployeeServices {
 
     private EmployeeDAO employeeDAO;
-    private ArrayList<Employee> employees;
 
     public EmployeeServices() {
         employeeDAO = new EmployeeDAO();
-        employees = FileHandler.loadEmployees();
+
     }
 
     // Check whether employee ID already exists
@@ -231,232 +225,287 @@ public class EmployeeServices {
     }
 
     // Get Employees
-    public ArrayList<Employee> getEmployees() {
-        return employees;
+    public List<Employee> getEmployees() {
+        return employeeDAO.getAllEmployees();
     }
 
     // Sort by Name
     public void sortByName() {
+        List<Employee> employeesFromDB = employeeDAO.getEmployeesSortedByName();
+        if(employeesFromDB.isEmpty()){
+            System.out.println("No employees found in the databse.");
+            return;
+        }
+        for(Employee emp: employeesFromDB){
+            emp.displayEmployee();
+            System.out.println("-------------------");
+        }
 
-        Collections.sort(
-                employees,
-                (e1, e2) ->
-                        e1.getName()
-                                .compareToIgnoreCase(e2.getName())
-        );
 
-        System.out.println(
-                "Employees sorted by name successfully."
-        );
+        // Collections.sort(
+        //         employees,
+        //         (e1, e2) ->
+        //                 e1.getName()
+        //                         .compareToIgnoreCase(e2.getName())
+        // );
+
+        // System.out.println(
+        //         "Employees sorted by name successfully."
+        // );
     }
 
     // Sort by Salary
     public void sortBySalary() {
+        List<Employee> employeesFromDB = employeeDAO.getEmployeesSortedBySalary();
+        if(employeesFromDB.isEmpty()){
+            System.out.println("No employees found in the database.");
+            return;
+        }
+        for(Employee emp: employeesFromDB){
+            emp.displayEmployee();
+            System.out.println("-------------------");
+        }
 
-        Collections.sort(
-                employees,
-                (e1, e2) ->
-                        Double.compare(
-                                e1.getSalary(),
-                                e2.getSalary()
-                        )
-        );
+        // Collections.sort(
+        //         employees,
+        //         (e1, e2) ->
+        //                 Double.compare(
+        //                         e1.getSalary(),
+        //                         e2.getSalary()
+        //                 )
+        // );
 
-        System.out.println(
-                "Employees sorted by salary successfully."
-        );
+        // System.out.println(
+        //         "Employees sorted by salary successfully."
+        // );
     }
 
     // Highest Paid Employee
     public Employee getHighestPaidEmployee() {
+        return employeeDAO.getHighestPaidEmployee();
 
-        if (employees.isEmpty()) {
+        // if (employees.isEmpty()) {
 
-            System.out.println(
-                    "No Employees found, please add employees first."
-            );
+        //     System.out.println(
+        //             "No Employees found, please add employees first."
+        //     );
 
-            return null;
-        }
+        //     return null;
+        // }
 
-        Employee highestPaid = employees.get(0);
+        // Employee highestPaid = employees.get(0);
 
-        for (Employee emp : employees) {
+        // for (Employee emp : employees) {
 
-            if (emp.getSalary() > highestPaid.getSalary()) {
+        //     if (emp.getSalary() > highestPaid.getSalary()) {
 
-                highestPaid = emp;
-            }
-        }
+        //         highestPaid = emp;
+        //     }
+        // }
 
-        return highestPaid;
+        // return highestPaid;
     }
 
     // Average Salary
     public double getAverageSalary() {
+        return employeeDAO.getAverageSalary();
 
-        if (employees.isEmpty()) {
-            return 0;
-        }
+        // if (employees.isEmpty()) {
+        //     return 0;
+        // }
 
-        double total = 0;
+        // double total = 0;
 
-        for (Employee emp : employees) {
+        // for (Employee emp : employees) {
 
-            total += emp.getSalary();
-        }
+        //     total += emp.getSalary();
+        // }
 
-        return total / employees.size();
+        // return total / employees.size();
     }
 
     // Sort by ID
     public void sortEmployeeById() {
-
-        if (employees.isEmpty()) {
-
-            System.out.println(
-                    "No Employees found, please add employees first."
-            );
-
+        List<Employee> employeesFromDB = employeeDAO.getEmployeesSortedById();
+        if(employeesFromDB.isEmpty()){
+            System.out.println("No employees found in the database.");
             return;
         }
+        for(Employee emp: employeesFromDB){
+            emp.displayEmployee();
+            System.out.println("-------------------");
+        }
 
-        Collections.sort(
-                employees,
-                (e1, e2) ->
-                        Integer.compare(
-                                e1.getId(),
-                                e2.getId()
-                        )
-        );
+        // if (employees.isEmpty()) {
 
-        System.out.println(
-                "Employees sorted by ID successfully."
-        );
+        //     System.out.println(
+        //             "No Employees found, please add employees first."
+        //     );
+
+        //     return;
+        // }
+
+        // Collections.sort(
+        //         employees,
+        //         (e1, e2) ->
+        //                 Integer.compare(
+        //                         e1.getId(),
+        //                         e2.getId()
+        //                 )
+        // );
+
+        // System.out.println(
+        //         "Employees sorted by ID successfully."
+        // );
     }
 
     // Count Employees by Department
     public void countByDepartment() {
-
-        HashMap<String, Integer> departmentCount =
-                new HashMap<>();
-
-        for (Employee emp : employees) {
-
-            String department = emp.getDepartment();
-
-            if (departmentCount.containsKey(department)) {
-
-                departmentCount.put(
-                        department,
-                        departmentCount.get(department) + 1
-                );
-
-            } else {
-
-                departmentCount.put(
-                        department,
-                        1
-                );
-            }
+        Map<String, Integer> departmentCount = employeeDAO.countEmployeesByDepartment();
+        if(departmentCount.isEmpty()){
+            System.out.println("No employees found in the database.");
+            return;
+        }
+        for(Map.Entry<String,Integer> entry: departmentCount.entrySet()){
+            System.out.println("Department: "+ entry.getKey() + ", Count: "+ entry.getValue());
         }
 
-        for (Map.Entry<String, Integer> entry :
-                departmentCount.entrySet()) {
+        // HashMap<String, Integer> departmentCount =
+        //         new HashMap<>();
 
-            System.out.println(
-                    "Department: "
-                            + entry.getKey()
-                            + ", Count: "
-                            + entry.getValue()
-            );
-        }
+        // for (Employee emp : employees) {
+
+        //     String department = emp.getDepartment();
+
+        //     if (departmentCount.containsKey(department)) {
+
+        //         departmentCount.put(
+        //                 department,
+        //                 departmentCount.get(department) + 1
+        //         );
+
+        //     } else {
+
+        //         departmentCount.put(
+        //                 department,
+        //                 1
+        //         );
+        //     }
+        // }
+
+        // for (Map.Entry<String, Integer> entry :
+        //         departmentCount.entrySet()) {
+
+        //     System.out.println(
+        //             "Department: "
+        //                     + entry.getKey()
+        //                     + ", Count: "
+        //                     + entry.getValue()
+        //     );
+        // }
     }
 
     // Search by Name
     public void searchByName(String name)
             throws EmployeeNotFoundException {
-
-        boolean found = false;
-
-        for (Employee emp : employees) {
-
-            if (emp.getName().equalsIgnoreCase(name)) {
-
-                System.out.println("Employee found");
-
-                emp.displayEmployee();
-
-                found = true;
-            }
+        List<Employee> employeesFromDB = employeeDAO.findEmployeesByName(name);
+        if(employeesFromDB.isEmpty()){
+            throw new EmployeeNotFoundException("No employees found with name: " + name);
+        }
+        for(Employee emp: employeesFromDB){
+            emp.displayEmployee();
+            System.out.println("-------------------");
         }
 
-        if (!found) {
+        // boolean found = false;
 
-            throw new EmployeeNotFoundException(
-                    "Employee with name "
-                            + name
-                            + " not found."
-            );
-        }
+        // for (Employee emp : employees) {
+
+        //     if (emp.getName().equalsIgnoreCase(name)) {
+
+        //         System.out.println("Employee found");
+
+        //         emp.displayEmployee();
+
+        //         found = true;
+        //     }
+        // }
+
+        // if (!found) {
+
+        //     throw new EmployeeNotFoundException(
+        //             "Employee with name "
+        //                     + name
+        //                     + " not found."
+        //     );
+        // }
     }
 
     // Show Employees by Department
     public void showEmployeesByDepartment(String department)
             throws EmployeeNotFoundException {
+            List<Employee> employeesFromDB = employeeDAO.findEmployeesByDepartment(department);
+            if(employeesFromDB.isEmpty()){
+                throw new EmployeeNotFoundException("No employees found in department: " + department);
+            }
+            System.out.println("Employees in department: " + department);
+            for(Employee emp: employeesFromDB){
+                emp.displayEmployee();
+                System.out.println("-------------------");
+            }
 
-        List<Employee> result =
-                employees.stream()
-                        .filter(employee ->
-                                employee.getDepartment()
-                                        .equalsIgnoreCase(department))
-                        .collect(Collectors.toList());
+        // List<Employee> result =
+        //         employees.stream()
+        //                 .filter(employee ->
+        //                         employee.getDepartment()
+        //                                 .equalsIgnoreCase(department))
+        //                 .collect(Collectors.toList());
 
-        if (result.isEmpty()) {
+        // if (result.isEmpty()) {
 
-            throw new EmployeeNotFoundException(
-                    "No employees found in department "
-                            + department
-            );
-        }
+        //     throw new EmployeeNotFoundException(
+        //             "No employees found in department "
+        //                     + department
+        //     );
+        // }
 
-        for (Employee emp : result) {
+        // for (Employee emp : result) {
 
-            emp.displayEmployee();
-        }
+        //     emp.displayEmployee();
+        // }
     }
 
     // Highest Paid Employee using Stream
-    public Employee getHighestPaidEmployeeUsingStream()
-            throws EmployeeNotFoundException {
+    // public Employee getHighestPaidEmployeeUsingStream()
+    //         throws EmployeeNotFoundException {
 
-        return employees.stream()
-                .max(
-                        Comparator.comparingDouble(
-                                Employee::getSalary
-                        )
-                )
-                .orElseThrow(() ->
-                        new EmployeeNotFoundException(
-                                "No Employees Found."
-                        )
-                );
-    }
+    //     return employees.stream()
+    //             .max(
+    //                     Comparator.comparingDouble(
+    //                             Employee::getSalary
+    //                     )
+    //             )
+    //             .orElseThrow(() ->
+    //                     new EmployeeNotFoundException(
+    //                             "No Employees Found."
+    //                     )
+    //             );
+    // }
 
-    // Average Salary using Stream
-    public double getAverageSalaryUsingStream()
-            throws EmployeeNotFoundException {
+    // // Average Salary using Stream
+    // public double getAverageSalaryUsingStream()
+    //         throws EmployeeNotFoundException {
 
-        if (employees.isEmpty()) {
+    //     if (employees.isEmpty()) {
 
-            throw new EmployeeNotFoundException(
-                    "No Employees Found."
-            );
-        }
+    //         throw new EmployeeNotFoundException(
+    //                 "No Employees Found."
+    //         );
+    //     }
 
-        return employees.stream()
-                .mapToDouble(Employee::getSalary)
-                .average()
-                .orElse(0);
-    }
+    //     return employees.stream()
+    //             .mapToDouble(Employee::getSalary)
+    //             .average()
+    //             .orElse(0);
+    // }
 }

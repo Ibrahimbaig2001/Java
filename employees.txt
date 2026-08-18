@@ -1,3 +1,0 @@
-102,Ismail,Developer,Web Dev,25000.0
-101,Ibrahim Baig,IT,developer,30000.0
-103,Ishaq,IT,System Engineer,70000.0

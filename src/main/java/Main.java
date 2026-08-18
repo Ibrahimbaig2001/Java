@@ -19,7 +19,6 @@ public class Main {
             System.out.println("13. Show Employees by Department.");
             System.out.println("14. Exit");
             System.out.print("Enter your choice: ");
-            System.out.print("Enter your choice: ");
 
 try {
 
@@ -43,8 +42,7 @@ try {
                     double salary = sc.nextDouble();
                     Employee emp = new Employee(id, name, department, designation, salary);
                     try{
-                        service.addEmployee(emp);
-                        FileHandler.saveEmployees(service.getEmployees());
+                       service.addEmployee(emp);
                     }
                     catch(InvalidEmployeeException e){
                         System.out.println(e.getMessage());
@@ -77,7 +75,6 @@ try {
                     double updateSalary = sc.nextDouble();
                     try{
                         service.updateEmployee(updateId, updateName, updateDepartment, updateDesignation, updateSalary);
-                        FileHandler.saveEmployees(service.getEmployees());
                     }
                     catch(InvalidEmployeeException e){
                         System.out.println(e.getMessage());
@@ -91,7 +88,6 @@ try {
                     int deleteId = sc.nextInt();
                     try{
                         service.deleteEmployee(deleteId);
-                        FileHandler.saveEmployees(service.getEmployees());
                     }
                     catch(EmployeeNotFoundException e){
                         System.out.println(e.getMessage());
@@ -99,11 +95,9 @@ try {
                     break;
                 case 6:
                     service.sortByName();
-                    FileHandler.saveEmployees(service.getEmployees());
                     break;
                 case 7:
                     service.sortBySalary();
-                    FileHandler.saveEmployees(service.getEmployees());
                     break;
                 case 8:
                     Employee highestPaid = service.getHighestPaidEmployee();
@@ -121,16 +115,10 @@ try {
                     break;
                 case 10:
                     service.sortEmployeeById();
-                    service.viewEmployees();
                     break;
                 case 11:
-                    if(service.getEmployees().isEmpty()){
-                        System.out.println("No employees found, please add employees first.");
-                    }
-                    else{
                         service.countByDepartment();
                         break;
-                    }
                 case 12:
                     sc.nextLine();
                     System.out.println("Enter the name of the emplyee to be searched:");

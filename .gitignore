@@ -1,0 +1,8 @@
+# Database configuration - contains MySQL password
+src/main/resources/application.properties
+
+# Maven build files
+target/
+
+# Compiled Java files
+*.class

@@ -3,7 +3,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 public class EmployeeDAO {
     public void addEmployee(Employee employee){
         String sql = """
@@ -121,5 +124,168 @@ return employees;
         return false;
     }
     }
+    public List<Employee> getEmployeesSortedByName(){
+       String sql = """
+               SELECT id, name, department, designation, salary FROM employees ORDER BY name ASC
+               """;
+        List<Employee> employees = new ArrayList<>();
+        try(Connection connection = DBConnection.getConnection();
+    PreparedStatement statement = connection.prepareStatement(sql);
+ResultSet resultSet = statement.executeQuery()){
+    while(resultSet.next()){
+        int id = resultSet.getInt("id");
+        String name = resultSet.getString("name");
+        String department = resultSet.getString("department");
+        String designation = resultSet.getString("designation");
+        double salary = resultSet.getDouble("salary");
+        Employee employee = new Employee(id, name, department, designation, salary);
+        employees.add(employee);
+    }
 
+    } catch(SQLException e){
+        System.out.println("Error retrieving employees sorted by name: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return employees;
+
+    }
+    public List<Employee> getEmployeesSortedBySalary(){
+        String sql = """
+                SELECT id, name, department, designation,salary FROM employees ORDER BY salary DESC
+                """;
+        List<Employee> employees = new ArrayList<>();
+        try(Connection connection = DBConnection.getConnection();
+    PreparedStatement statement = connection.prepareStatement(sql);
+ResultSet resultSet = statement.executeQuery()){
+    while(resultSet.next()){
+        int id = resultSet.getInt("id");
+        String name = resultSet.getString("name");
+        String department = resultSet.getString("department");
+        String designation = resultSet.getString("designation");
+        double salary = resultSet.getDouble("salary");
+        Employee employee = new Employee(id, name, department, designation, salary);
+        employees.add(employee);
+    }
+    } catch(SQLException e){
+        System.out.println("Error retrieving employees sorted by salary: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return employees;
+}
+public Employee getHighestPaidEmployee(){
+    String sql = """
+            SELECT id, name, department, designation, salary FROM employees ORDER BY salary DESC LIMIT 1
+            """;
+        try(Connection connection = DBConnection.getConnection();
+    PreparedStatement statement = connection.prepareStatement(sql);
+ResultSet resultSet = statement.executeQuery()){
+    if(resultSet.next()){
+        int id = resultSet.getInt("id");
+        String name = resultSet.getString("name");
+        String department = resultSet.getString("department");
+        String designation = resultSet.getString("designation");
+        double salary = resultSet.getDouble("salary");
+        return new Employee(id, name, department, designation, salary);
+    }
+} catch(SQLException e){
+    System.out.println("Error retrieving highest paid employee: " + e.getMessage());
+    e.printStackTrace();
+} 
+return null;
+}
+public double getAverageSalary(){
+    String sql = """
+            SELECT AVG(salary) AS average_salary FROM employees
+            """;
+    try(Connection connection = DBConnection.getConnection();
+PreparedStatement statement = connection.prepareStatement(sql);
+ResultSet resultSet = statement.executeQuery()){
+    if(resultSet.next()){
+        return resultSet.getDouble("average_salary");
+    }
+} catch(SQLException e){
+    System.out.println("Error calculating average salary.");
+    e.printStackTrace();
+}
+return 0;
+}
+public List<Employee> getEmployeesSortedById(){
+    String sql =  """
+            SELECT id, name, department,designation,salary FROM employees ORDER BY id ASC
+            """;
+            List<Employee> employees = new ArrayList<>();
+            try(Connection connection = DBConnection.getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql);
+    ResultSet resultSet = statement.executeQuery()){
+        while(resultSet.next()){
+            Employee employee = new Employee(resultSet.getInt("id"), resultSet.getString("name"),resultSet.getString("department"), resultSet.getString("designation"),resultSet.getDouble("salary"));
+            employees.add(employee);
+        }
+    } catch(SQLException e){
+        System.out.println("Error while sorting employees.");
+        e.printStackTrace();
+    }
+    return employees;
+}
+public Map<String, Integer> countEmployeesByDepartment(){
+    String sql = """
+            SELECT department, COUNT(*) AS employee_count FROM employees GROUP BY department
+            """;
+        Map<String, Integer> departmentCount = new HashMap<>();
+        try(Connection connection = DBConnection.getConnection();
+    PreparedStatement statement = connection.prepareStatement(sql);
+ResultSet resultSet = statement.executeQuery()){
+    while(resultSet.next()){
+        String department = resultSet.getString("department");
+        int count = resultSet.getInt("employee_count");
+        departmentCount.put( department,count);
+    }
+} catch(SQLException e){
+    System.out.println("Error counting employees by department: " + e.getMessage() );
+    e.printStackTrace();
+}
+return departmentCount;
+}
+public List<Employee> findEmployeesByName(String name){
+    String sql = """
+            SELECT id, name, department, designation, salary FROM employees WHERE LOWER(name) = LOWER(?)
+            """;
+    List<Employee> employees = new ArrayList<>();
+    try(Connection connection = DBConnection.getConnection();
+PreparedStatement statement = connection.prepareStatement(sql);
+){
+    statement.setString(1,name);
+    try(ResultSet resultSet = statement.executeQuery()){
+        while(resultSet.next()){
+            Employee employee = new Employee(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getString("department"), resultSet.getString("designation"), resultSet.getDouble("salary"));
+            employees.add(employee);
+        }
+    }
+
+} catch(SQLException e){
+    System.out.println("Error finding employee by name: "+ e.getMessage());
+    e.printStackTrace();
+}
+return employees;
+}
+public List<Employee> findEmployeesByDepartment(String department){
+    String sql = """
+             SELECT id, name, department, designation,salary FROM employees WHERE LOWER(department) = LOWER(?)
+            """;
+    List<Employee> employees = new ArrayList<>();
+    try(Connection connection = DBConnection.getConnection();
+PreparedStatement statement = connection.prepareStatement(sql)){
+    statement.setString(1, department);
+    try(ResultSet resultSet = statement.executeQuery()){
+        while(resultSet.next()){
+            Employee employee = new Employee(resultSet.getInt("id"), resultSet.getString("name"), resultSet.getString("department"), resultSet.getString("designation"), resultSet.getDouble("salary"));
+            employees.add(employee);
+        }
+    }
+} catch(SQLException e){
+    System.out.println("Error finding employees by department: " + e.getMessage());
+    e.printStackTrace();
+}
+return employees;
+}
 }
