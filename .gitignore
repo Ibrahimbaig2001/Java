@@ -6,3 +6,7 @@ target/
 
 # Compiled Java files
 *.class
+
+.DS_Store
+
+.idea
